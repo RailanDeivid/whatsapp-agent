@@ -163,6 +163,7 @@ def _get_model() -> ChatOpenAI:
                     temperature=OPENAI_MODEL_TEMPERATURE,
                     base_url=OPENAI_BASE_URL,
                     api_key=OPENAI_API_KEY,
+                    default_headers={"X-OpenRouter-Cache": "1"},
                 )
     return _model
 
@@ -181,6 +182,7 @@ def _get_fallback_model() -> ChatOpenAI | None:
                     temperature=OPENAI_MODEL_TEMPERATURE,
                     base_url=OPENAI_BASE_URL,
                     api_key=OPENAI_API_KEY,
+                    default_headers={"X-OpenRouter-Cache": "1"},
                 )
     return _fallback_model
 
@@ -461,7 +463,8 @@ def generate_thinking_message(message: str) -> str:
             "- NUNCA use mais de uma frase\n"
             "- NUNCA mencione banco de dados, tabela, sistema ou tecnologia"
         )
-        result = _get_model().invoke(prompt)
+        model = _get_fallback_model() or _get_model()
+        result = model.invoke(prompt)
         return result.content.strip()
     except Exception as e:
         logger.warning("Falha ao gerar mensagem de espera dinamica: %s", e)
@@ -474,7 +477,8 @@ def _run_general_response(message: str, session_id: str, sender_name: str, histo
     invoke_input = _build_invoke_input(message, history, sender_name)
     try:
         prompt_text = general_prompt.format(**invoke_input)
-        result = _get_model().invoke(prompt_text)
+        model = _get_fallback_model() or _get_model()
+        result = model.invoke(prompt_text)
         return result.content
     except Exception as e:
         logger.error("Erro na resposta geral: %s", e)

@@ -202,7 +202,7 @@
 <text class="t-sub-p"  x="460" y="1193">Ferramentas: Dremio (vendas · delivery · pgto · estornos · metas)</text>
 <text class="t-sub-p"  x="460" y="1211">MySQL (compras)  ·  gerar_grafico  ·  exportar_excel</text>
 <text class="t-sub-p"  x="460" y="1230">Prompt: confidencialidade · regras SQL Dremio · SSS · datas</text>
-<text class="t-sub-p"  x="460" y="1248">Histórico: últimas 5 mensagens por sessão (Redis)</text>
+<text class="t-sub-p"  x="460" y="1248">Histórico: últimas 30 mensagens por sessão (Redis)</text>
 <text class="t-sub-p"  x="460" y="1268" fill="#FACC15" font-size="13px">ambos: executa em paralelo com RAG (ThreadPoolExecutor)</text>
 
 <!-- ─── COLUNA LLM (x=920, w=160, center=1000) ─── -->
