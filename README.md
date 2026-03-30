@@ -12,7 +12,7 @@
 
 # whatsapp-agent
 
-Assistente inteligente integrado ao WhatsApp com arquitetura **multi-agente**: um **Router LLM** classifica cada pergunta e roteia para o **Agente SQL** (Grok xAI via OpenRouter + Dremio/MySQL, para dados de vendas e compras), o **Agente RAG** (Grok xAI via OpenRouter + Chroma, para documentos internos como políticas, organograma e contatos), ou responde diretamente via **LLM** para saudações e perguntas fora do escopo. Áudios são transcritos via **OpenAI Whisper** antes de chegarem aos agentes.
+Assistente inteligente integrado ao WhatsApp com arquitetura **multi-agente**: um **Router LLM** classifica cada pergunta e roteia para o **Agente SQL** (Grok 4.1 Fast via OpenRouter + Dremio/MySQL, para dados de vendas e compras), o **Agente RAG** (Grok 4.1 Fast via OpenRouter + Chroma, para documentos internos), ou responde diretamente via **LLM** para saudações e perguntas gerais. Respostas gerais e mensagens de espera usam o **Gemini 2.0 Flash** (modelo fallback econômico). Áudios são transcritos via **OpenAI Whisper** antes de chegarem aos agentes.
 
 ## Índice
 
@@ -111,25 +111,28 @@ whatsapp-agent/
 mensagem → route_and_invoke()
                 │
          [Router LLM]         ← classifica a intenção: sql / docs / ambos / geral
-         Grok xAI via OpenRouter
+         Grok 4.1 Fast (xAI) via OpenRouter  ·  prompt cache ativo
                 │
      ┌──────────┼──────────┬──────────┐
    "sql"      "docs"    "ambos"    "geral"
      │           │           │           │
 [Agente SQL] [Agente RAG] [Agente SQL] [LLM direto]
-Grok (xAI)   Grok (xAI)   +            Grok (xAI)
-Dremio+MySQL Chroma       [Agente RAG] sem ferramentas
-                          (paralelo — ThreadPoolExecutor)
+Grok 4.1     Grok 4.1     +            Gemini 2.0 Flash
+Fast (xAI)   Fast (xAI)   [Agente RAG] sem ferramentas
+Dremio+MySQL Chroma       (paralelo — ThreadPoolExecutor)
 ```
 
-| Rota | Quando aciona | Ferramentas |
-|---|---|---|
-| `sql` | Vendas, faturamento, delivery, formas de pagamento, estornos, metas, compras, ticket médio | `consultar_vendas`, `consultar_delivery`, `consultar_formas_pagamento`, `consultar_estornos`, `consultar_metas` (Dremio) + `consultar_compras` (MySQL) + `gerar_grafico` + `exportar_excel` |
-| `docs` | Políticas, organograma, contatos, emails, ramais | `consultar_documentos` (Chroma) |
-| `ambos` | Pergunta envolve dados numéricos E documentos | Agente SQL + Agente RAG **em paralelo** |
-| `geral` | Saudações, agradecimentos, fora do escopo | Nenhuma — LLM direto (sem ReAct) |
+| Rota | Quando aciona | Modelo | Ferramentas |
+|---|---|---|---|
+| `sql` | Vendas, faturamento, delivery, formas de pagamento, estornos, metas, compras, ticket médio | Grok 4.1 Fast | `consultar_vendas`, `consultar_delivery`, `consultar_formas_pagamento`, `consultar_estornos`, `consultar_metas`, `consultar_cortesias` (Dremio) + `consultar_compras` (MySQL) + `gerar_grafico` + `exportar_excel` |
+| `docs` | Políticas, organograma, contatos, emails, ramais | Grok 4.1 Fast | `consultar_documentos` (Chroma) |
+| `ambos` | Pergunta envolve dados numéricos E documentos | Grok 4.1 Fast | Agente SQL + Agente RAG **em paralelo** |
+| `geral` | Saudações, agradecimentos, fora do escopo, perguntas conceituais | Gemini 2.0 Flash | Nenhuma — LLM direto (sem ReAct) |
 
-**Fallback de modelo:** se o modelo principal falhar, o sistema tenta automaticamente com `FALLBACK_MODEL_NAME`. Se não configurado, retorna mensagem de erro ao usuário.
+**Fallback de modelo:**
+- **Respostas gerais e mensagens de espera:** sempre usam `FALLBACK_MODEL_NAME` (Gemini 2.0 Flash) — mais rápido e ~5x mais barato que o modelo principal para tarefas simples.
+- **Falha do modelo principal (SQL/RAG):** sistema tenta automaticamente o fallback. Se não configurado, retorna mensagem de erro.
+- **Excel fast-path:** se o usuário pedir Excel após uma consulta, o sistema usa o DataFrame já em cache — sem rodar SQL novamente.
 
 ---
 
@@ -290,8 +293,11 @@ DREMIO_PASSWORD=sua_senha
 RAG_FILES_DIR=rag_files
 VECTOR_STORE_PATH=vectorstore
 
-# Fallback de modelo (deixe em branco para desativar)
-FALLBACK_MODEL_NAME=x-ai/grok-3-mini-beta
+# Fallback — respostas gerais, thinking message e erros do modelo principal
+FALLBACK_MODEL_NAME=google/gemini-2.0-flash-001
+
+# Histórico de conversa por sessão (número de mensagens)
+CONVERSATION_MAX_HISTORY=30
 
 # Controle de acesso
 SQLITE_PATH=data/access.db
@@ -324,10 +330,10 @@ Comportamento definido em [src/prompts.py](src/prompts.py).
 
 | Agente | Regras principais |
 |---|---|
-| **SQL** (`react_prompt`) | Nunca revela tabelas/schemas. Sempre consulta as tools. Datas sem ano completadas com o ano corrente. SSS calculado via CTE sem perguntar ao usuário. Histórico: 5 pares de mensagens. |
+| **SQL** (`react_prompt`) | Nunca revela tabelas/schemas. Sempre consulta as tools. Datas sem ano completadas com o ano corrente. SSS calculado via CTE sem perguntar ao usuário. Vendas por vertical retornam casa a casa + total consolidado. Vs meta somente quando o usuário pedir explicitamente. Histórico: 30 mensagens por sessão. |
 | **RAG** (`rag_prompt`) | Responde somente com base nos documentos indexados. Se não encontrar, informa claramente. Nunca inventa informações. |
-| **Geral** (`general_prompt`) | LLM direto, sem ReAct. Saudações, agradecimentos, fora do escopo. Mais rápido e barato. |
-| **Router** (`router_prompt`) | Classifica em `sql`, `docs`, `ambos` ou `geral`. Fallback para `sql` em caso de resposta inválida. |
+| **Geral** (`general_prompt`) | Gemini 2.0 Flash, sem ReAct. Saudações, perguntas conceituais, fora do escopo. Mais rápido e barato. |
+| **Router** (`router_prompt`) | Grok 4.1 Fast. Classifica em `sql`, `docs`, `ambos` ou `geral`. Fallback para `sql` em caso de resposta inválida. |
 
 > Ambos os agentes compartilham o mesmo histórico Redis por sessão (TTL 24h). O usuário pode alternar entre perguntas de dados e documentos livremente.
 
@@ -337,13 +343,13 @@ Comportamento definido em [src/prompts.py](src/prompts.py).
 
 ### Agentes (chat / ReAct) — via OpenRouter
 
-| Modelo | Indicado para |
-|---|---|
-| `x-ai/grok-4.1-fast` | Produção — padrão atual. Melhor custo-benefício: rápido, barato e com boa aderência ao formato ReAct |
-| `x-ai/grok-4` | Raciocínio mais profundo, mas mais lento e caro — não traz ganho prático para este caso de uso |
-| `x-ai/grok-3-mini-beta` | Testes — mais barato, menor confiabilidade no formato ReAct |
+| Modelo | Uso | Preço (input/output por 1M tokens) |
+|---|---|---|
+| `x-ai/grok-4.1-fast` | Modelo principal — SQL Agent, RAG Agent, Router | $0,20 / $0,50 |
+| `google/gemini-2.0-flash-001` | Fallback — respostas gerais e mensagens de espera | $0,10 / $0,40 |
+| `x-ai/grok-4` | Raciocínio profundo — não recomendado: reasoning obrigatório e 15x mais caro | $3,00 / $15,00 |
 
-> O OpenRouter permite trocar o modelo sem alterar código. Outros modelos (Claude, GPT-4o) também são compatíveis via `langchain-openai`.
+> O OpenRouter permite trocar o modelo sem alterar código via `ROUTER_MODEL_NAME` e `FALLBACK_MODEL_NAME` no `.env`. Cache de prompt ativo via header `X-OpenRouter-Cache` — reduz custo do prompt do sistema de $0,20 para $0,05/M tokens.
 
 ### Embeddings e Transcrição
 
@@ -356,14 +362,16 @@ Comportamento definido em [src/prompts.py](src/prompts.py).
 
 ## Custo por interação (estimativa)
 
-| Tipo de interação | Custo (USD) | Custo (BRL) |
-|---|---|---|
-| Router (classificação) | ~$0,0001 | ~R$0,001 |
-| Mensagem SQL simples | ~$0,001 | ~R$0,006 |
-| Mensagem SQL com histórico | ~$0,002 | ~R$0,012 |
-| Mensagem RAG | ~$0,001 | ~R$0,006 |
-| Mensagem geral | ~$0,0001 | ~R$0,001 |
-| Áudio 30s + agente | ~$0,004 | ~R$0,024 |
-| Indexação PDF (~5 páginas) | ~$0,001 (uma vez) | ~R$0,006 |
+| Tipo de interação | Modelo usado | Custo (USD) | Custo (BRL) |
+|---|---|---|---|
+| Router (classificação) | Grok 4.1 Fast | ~$0,0002 | ~R$0,001 |
+| Mensagem SQL simples | Grok 4.1 Fast | ~$0,002 | ~R$0,012 |
+| Mensagem SQL (histórico 30 msgs) | Grok 4.1 Fast | ~$0,003 | ~R$0,018 |
+| Mensagem RAG | Grok 4.1 Fast | ~$0,001 | ~R$0,006 |
+| Mensagem geral / conceitual | Gemini 2.0 Flash | ~$0,0003 | ~R$0,002 |
+| Thinking message (espera) | Gemini 2.0 Flash | ~$0,00005 | ~R$0,0003 |
+| Excel (dados já em cache) | Zero LLM | $0,00 | R$0,00 |
+| Áudio 30s + agente | Whisper + Grok | ~$0,004 | ~R$0,024 |
+| Indexação PDF (~5 páginas) | OpenAI Embeddings | ~$0,001 (uma vez) | ~R$0,006 |
 
-> Preços Grok 4.1-fast via OpenRouter: ~$0,20/1M tokens input · ~$0,50/1M tokens output. Consulte [openrouter.ai/models](https://openrouter.ai/models) para preços atualizados.
+> Prompt cache ativo — o prompt do sistema (~3.500 tokens) é cacheado a $0,05/M em vez de $0,20/M, reduzindo ~25% do custo de input em todas as chamadas. Consulte [openrouter.ai/models](https://openrouter.ai/models) para preços atualizados.

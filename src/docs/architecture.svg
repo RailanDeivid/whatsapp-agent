@@ -172,7 +172,7 @@
 <text class="t-sub"  x="800" y="1020">ambos  →  dados + documentos (paralelo)</text>
 <text class="t-sub"  x="1200" y="1020">geral  →  saudações / fora escopo</text>
 <text class="t-sub"  x="1000" y="1040" fill="#6B7280">resposta inválida do Router → fallback sql</text>
-<text class="t-sub"  x="1000" y="1058" fill="#6B7280">falha do modelo principal → fallback model (FALLBACK_MODEL_NAME)</text>
+<text class="t-sub"  x="1000" y="1058" fill="#6B7280">falha do principal → fallback model  |  geral/thinking → Gemini 2.0 Flash</text>
 
 <!-- ════════════════════════════════════════════════════
      SEÇÃO 6 — AGENTES  (3 colunas)
@@ -199,19 +199,20 @@
 <rect class="card-purple" x="10" y="1124" width="900" height="205" rx="14"/>
 <text class="t-head-p" x="460" y="1152">Agente SQL  —  Grok (xAI)</text>
 <text class="t-sub-p"  x="460" y="1174">ReAct: Thought → Action → Observation → Final Answer</text>
-<text class="t-sub-p"  x="460" y="1193">Ferramentas: Dremio (vendas · delivery · pgto · estornos · metas)</text>
-<text class="t-sub-p"  x="460" y="1211">MySQL (compras)  ·  gerar_grafico  ·  exportar_excel</text>
-<text class="t-sub-p"  x="460" y="1230">Prompt: confidencialidade · regras SQL Dremio · SSS · datas</text>
-<text class="t-sub-p"  x="460" y="1248">Histórico: últimas 30 mensagens por sessão (Redis)</text>
+<text class="t-sub-p"  x="460" y="1193">Ferramentas: Dremio (vendas · delivery · pgto · estornos · metas · cortesias)</text>
+<text class="t-sub-p"  x="460" y="1211">MySQL (compras)  ·  gerar_grafico  ·  exportar_excel  (fast-path cache)</text>
+<text class="t-sub-p"  x="460" y="1230">Vendas por vertical → casa a casa + total  ·  vs meta somente se pedido</text>
+<text class="t-sub-p"  x="460" y="1248">Histórico: últimas 30 mensagens por sessão (Redis)  ·  prompt cache ativo</text>
 <text class="t-sub-p"  x="460" y="1268" fill="#FACC15" font-size="13px">ambos: executa em paralelo com RAG (ThreadPoolExecutor)</text>
 
 <!-- ─── COLUNA LLM (x=920, w=160, center=1000) ─── -->
 <rect class="card" x="920" y="1124" width="160" height="160" rx="12"/>
-<text class="t-head" x="1000" y="1154">LLM Direto</text>
-<text class="t-sub"  x="1000" y="1178">Grok (xAI)</text>
-<text class="t-sub"  x="1000" y="1198">general_prompt</text>
-<text class="t-sub"  x="1000" y="1218">sem ferramentas</text>
-<text class="t-sub"  x="1000" y="1238">resposta direta</text>
+<text class="t-head" x="1000" y="1148">LLM Direto</text>
+<text class="t-sub"  x="1000" y="1168">Gemini 2.0 Flash</text>
+<text class="t-sub"  x="1000" y="1186">(Google)</text>
+<text class="t-sub"  x="1000" y="1206">general_prompt</text>
+<text class="t-sub"  x="1000" y="1224">sem ferramentas</text>
+<text class="t-sub"  x="1000" y="1244" fill="#FACC15">thinking msg</text>
 
 <!-- ─── COLUNA RAG (x=1090, w=900, center=1540) ─── -->
 <rect class="card-purple" x="1090" y="1124" width="900" height="180" rx="14"/>
