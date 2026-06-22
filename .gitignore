@@ -1,0 +1,14 @@
+/.venv
+.env
+**/.env
+/.__pycache__
+**/__pycache__/
+
+CLAUDE.md
+/rag_files/*
+!/rag_files/.gitkeep
+/vectorstore/
+/.pytest_cache
+*access.db
+.claude
+/docs/

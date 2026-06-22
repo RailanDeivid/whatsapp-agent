@@ -1,0 +1,301 @@
+<svg width="2000" height="2100" viewBox="0 0 2000 2100" xmlns="http://www.w3.org/2000/svg">
+<style>
+  .bg   { fill: #0B0F19; }
+
+  /* ── boxes ── */
+  .card         { fill: #111827; stroke: #00FF88; stroke-width: 2; filter: drop-shadow(0 0 6px #00FF8844); }
+  .card-yellow  { fill: #111827; stroke: #FACC15; stroke-width: 2; filter: drop-shadow(0 0 6px #FACC1544); }
+  .card-red     { fill: #1a0f0f; stroke: #EF4444; stroke-width: 2; filter: drop-shadow(0 0 6px #EF444444); }
+  .card-purple  { fill: #0f0f1a; stroke: #A855F7; stroke-width: 2; filter: drop-shadow(0 0 10px #A855F766);
+                  animation: glow 2.5s ease-in-out infinite; }
+  .card-tool    { fill: #0d1a14; stroke: #00CC6A; stroke-width: 1.5; }
+
+  @keyframes glow {
+    0%,100% { filter: drop-shadow(0 0 8px #A855F766); }
+    50%     { filter: drop-shadow(0 0 20px #A855F7AA); }
+  }
+
+  /* ── text ── */
+  .t-head   { font-family: monospace; font-size: 23px; font-weight: bold; text-anchor: middle; fill: #00FF88; }
+  .t-head-y { font-family: monospace; font-size: 23px; font-weight: bold; text-anchor: middle; fill: #FACC15; }
+  .t-head-p { font-family: monospace; font-size: 23px; font-weight: bold; text-anchor: middle; fill: #C084FC; }
+  .t-sub    { font-family: monospace; font-size: 17px; text-anchor: middle; fill: #6EE7B7; }
+  .t-sub-y  { font-family: monospace; font-size: 17px; text-anchor: middle; fill: #FDE68A; }
+  .t-sub-r  { font-family: monospace; font-size: 17px; text-anchor: middle; fill: #FCA5A5; }
+  .t-sub-p  { font-family: monospace; font-size: 17px; text-anchor: middle; fill: #D8B4FE; }
+  .t-label  { font-family: monospace; font-size: 15px; font-weight: bold; text-anchor: middle; fill: #FACC15; }
+  .t-tool   { font-family: monospace; font-size: 16px; font-weight: bold; text-anchor: middle; fill: #34D399; }
+  .t-tool-s { font-family: monospace; font-size: 14px; text-anchor: middle; fill: #6EE7B7; }
+
+  /* ── arrows ── */
+  .arr      { stroke: #00FF88; stroke-width: 2; fill: none; marker-end: url(#ah-green); }
+  .arr-y    { stroke: #FACC15; stroke-width: 2; fill: none; stroke-dasharray: 6 3; marker-end: url(#ah-yellow); }
+  .arr-r    { stroke: #EF4444; stroke-width: 2; fill: none; stroke-dasharray: 6 3; marker-end: url(#ah-red); }
+  .arr-p    { stroke: #A855F7; stroke-width: 2; fill: none; marker-end: url(#ah-purple); }
+  .arr-d    { stroke: #4ADE80; stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; marker-end: url(#ah-green2); }
+
+  /* ── divider ── */
+  .divider  { stroke: #1F2937; stroke-width: 1; fill: none; }
+
+  /* ── badge ── */
+  .badge-g  { fill: #052e16; stroke: #00FF88; stroke-width: 1; }
+  .badge-y  { fill: #1c1400; stroke: #FACC15; stroke-width: 1; }
+  .badge-p  { fill: #0f0520; stroke: #A855F7; stroke-width: 1; }
+</style>
+
+<!-- ── arrowhead markers ── -->
+<defs>
+  <marker id="ah-green"  markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L8,3 L0,6 Z" fill="#00FF88"/>
+  </marker>
+  <marker id="ah-green2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L8,3 L0,6 Z" fill="#4ADE80"/>
+  </marker>
+  <marker id="ah-yellow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L8,3 L0,6 Z" fill="#FACC15"/>
+  </marker>
+  <marker id="ah-red"    markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L8,3 L0,6 Z" fill="#EF4444"/>
+  </marker>
+  <marker id="ah-purple" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+    <path d="M0,0 L8,3 L0,6 Z" fill="#A855F7"/>
+  </marker>
+</defs>
+
+<rect class="bg" width="100%" height="100%"/>
+
+<!-- ════════════════════════════════════════════════════
+     SEÇÃO 1 — ENTRADA (WhatsApp → App)
+     ════════════════════════════════════════════════════ -->
+
+<!-- 1.1 Usuário -->
+<rect class="card" x="600" y="30" width="800" height="76" rx="12"/>
+<text class="t-head" x="1000" y="60">Usuario WhatsApp</text>
+<text class="t-sub"  x="1000" y="82">mensagem de texto, audio ou imagem</text>
+
+<line class="arr" x1="1000" y1="106" x2="1000" y2="136"/>
+
+<!-- 1.2 Evolution API -->
+<rect class="card" x="600" y="140" width="800" height="76" rx="12"/>
+<text class="t-head" x="1000" y="170">Evolution API  —  porta 8080</text>
+<text class="t-sub"  x="1000" y="192">gateway WhatsApp: recebe, valida e encaminha</text>
+
+<line class="arr" x1="1000" y1="216" x2="1000" y2="246"/>
+
+<!-- 1.3 App.py -->
+<rect class="card" x="600" y="250" width="800" height="130" rx="12"/>
+<text class="t-head" x="1000" y="278">app.py  —  Webhook FastAPI  (porta 8000)</text>
+<text class="t-sub"  x="1000" y="300">extrai chat_id · sender_name · message_id · texto da mensagem</text>
+<text class="t-sub"  x="1000" y="318">filtra grupos @g.us · fromMe · sticker</text>
+<text class="t-sub"  x="1000" y="336">detecta tipo (texto / audio / imagem) e verifica acesso</text>
+<text class="t-sub"  x="1000" y="356" fill="#6EE7B7">endpoints admin: /metrics · /limpar_cache · /reindexar  (x-api-key)</text>
+
+<line class="arr" x1="1000" y1="380" x2="1000" y2="410"/>
+
+<!-- ════════════════════════════════════════════════════
+     SEÇÃO 2 — CONTROLE DE ACESSO
+     ════════════════════════════════════════════════════ -->
+<rect class="card-yellow" x="600" y="414" width="800" height="170" rx="12"/>
+<text class="t-head-y" x="1000" y="444">Controle de Acesso  —  access_control.py</text>
+<text class="t-sub-y"  x="1000" y="468">SQLite  data/access.db   ·   verifica telefone do remetente</text>
+
+<!-- divisor interno -->
+<line class="divider" x1="620" y1="484" x2="1380" y2="484"/>
+
+<!-- 3 saídas possíveis -->
+<text class="t-sub-r" x="750" y="508">✗ Nao autorizado</text>
+<text class="t-sub-y" x="1000" y="508">△ Admin + /comando</text>
+<text class="t-sub"   x="1250" y="508">✓ Autorizado</text>
+
+<text class="t-sub-r" x="750" y="534">→ bloqueia · encerra</text>
+<text class="t-sub-y" x="1000" y="534">→ executa · encerra</text>
+<text class="t-sub"   x="1250" y="534">→ continua fluxo</text>
+
+<!-- Seta blocked — loop lateral direito -->
+<path class="arr-r" d="M1400,508 C1680,508 1680,106 1400,106" fill="none"/>
+<text class="t-sub-r" x="1660" y="307" font-size="14px" text-anchor="middle" transform="rotate(-90,1660,307)">bloqueado</text>
+
+<!-- Cmd Admin — caixa lateral esquerda -->
+<line class="arr-y" x1="600" y1="508" x2="380" y2="508"/>
+<rect class="card-yellow" x="130" y="414" width="250" height="160" rx="10"/>
+<text class="t-head-y" x="255" y="440" font-size="17px">Cmd Admin</text>
+<text class="t-sub-y"  x="255" y="460" font-size="13px">/autorizar · /bloquear</text>
+<text class="t-sub-y"  x="255" y="478" font-size="13px">/remover · /desbloquear</text>
+<text class="t-sub-y"  x="255" y="496" font-size="13px">/usuarios · /ajuda</text>
+<text class="t-sub-y"  x="255" y="514" font-size="13px">/reindexar (RAG)</text>
+<text class="t-sub"    x="255" y="534" font-size="12px" fill="#6EE7B7">/limpar (todos usuarios)</text>
+
+<!-- somente "Autorizado" continua -->
+<line class="arr" x1="1000" y1="584" x2="1000" y2="598"/>
+
+<!-- ════════════════════════════════════════════════════
+     SEÇÃO 3 — PRÉ-PROCESSAMENTO (Texto / Áudio / Imagem)
+     ════════════════════════════════════════════════════ -->
+<rect class="card" x="350" y="598" width="1300" height="130" rx="12"/>
+<text class="t-head" x="1000" y="626">Pre-processamento de Mensagem</text>
+<line class="divider" x1="370" y1="638" x2="1630" y2="638"/>
+
+<!-- três colunas: centros em 567, 1000, 1433 -->
+<text class="t-sub"  x="567" y="660" font-weight="bold">Texto</text>
+<text class="t-sub"  x="567" y="680">extrai conversation /</text>
+<text class="t-sub"  x="567" y="700">extendedTextMessage.text</text>
+
+<line x1="783" y1="642" x2="783" y2="722" stroke="#1F2937" stroke-width="1"/>
+
+<text class="t-sub"  x="1000" y="660" font-weight="bold">Audio  →  Whisper</text>
+<text class="t-sub"  x="1000" y="680">get_media_base64() via Evolution</text>
+<text class="t-sub"  x="1000" y="700">OpenAI whisper-1  ·  language=pt</text>
+
+<line x1="1217" y1="642" x2="1217" y2="722" stroke="#1F2937" stroke-width="1"/>
+
+<text class="t-sub"  x="1433" y="660" font-weight="bold">Imagem  →  Vision LLM</text>
+<text class="t-sub"  x="1433" y="680">get_media_base64() via Evolution</text>
+<text class="t-sub"  x="1433" y="700">Gemini Flash  ·  OCR + descricao</text>
+
+<line class="arr" x1="1000" y1="728" x2="1000" y2="758"/>
+
+<!-- ════════════════════════════════════════════════════
+     SEÇÃO 4 — BUFFER
+     ════════════════════════════════════════════════════ -->
+<rect class="card" x="600" y="742" width="800" height="140" rx="12"/>
+<text class="t-head" x="1000" y="770">message_buffer.py  —  Debounce Redis</text>
+<text class="t-sub"  x="1000" y="792">acumula mensagens do mesmo chat em {chat_id}_msg_buffer</text>
+<text class="t-sub"  x="1000" y="812">timer 3 s — reinicia a cada nova msg — dispara route_and_invoke()</text>
+<text class="t-sub"  x="1000" y="832">TTL 5 min no Redis  ·  histórico de conversa 24 h</text>
+<text class="t-sub"  x="1000" y="854" fill="#FACC15">reage ⏳ ao iniciar · envia "digitando..." · reage ✅ ao finalizar</text>
+
+<line class="arr" x1="1000" y1="882" x2="1000" y2="912"/>
+
+<!-- ════════════════════════════════════════════════════
+     SEÇÃO 5 — ROUTER
+     ════════════════════════════════════════════════════ -->
+<rect class="card" x="600" y="916" width="800" height="160" rx="12"/>
+<text class="t-head" x="1000" y="946">Router LLM  —  chains.py</text>
+<text class="t-sub"  x="1000" y="970">classifica a intenção da pergunta em uma de quatro rotas</text>
+<line class="divider" x1="620" y1="984" x2="1380" y2="984"/>
+<text class="t-sub"  x="800" y="1002">sql  →  dados / faturamento</text>
+<text class="t-sub"  x="1200" y="1002">docs  →  documentos internos</text>
+<text class="t-sub"  x="800" y="1020">ambos  →  dados + documentos (paralelo)</text>
+<text class="t-sub"  x="1200" y="1020">geral  →  saudações / fora escopo</text>
+<text class="t-sub"  x="1000" y="1040" fill="#6B7280">resposta inválida do Router → fallback sql</text>
+<text class="t-sub"  x="1000" y="1058" fill="#6B7280">falha do principal → fallback model  |  geral/thinking → Gemini 2.0 Flash</text>
+
+<!-- ════════════════════════════════════════════════════
+     SEÇÃO 6 — AGENTES  (3 colunas)
+     ════════════════════════════════════════════════════ -->
+
+<!-- setas do router para os 3 agentes -->
+<!-- Router bottom y=1076 — SQL center=460, LLM center=1000, RAG center=1540 -->
+<path class="arr-d" d="M800,1076 L460,1122"/>
+<path class="arr-d" d="M1000,1076 L1000,1086"/>
+<line class="arr" x1="1000" y1="1112" x2="1000" y2="1124"/>
+<path class="arr-d" d="M1200,1076 L1540,1122"/>
+
+<!-- badges de rota -->
+<rect class="badge-y" x="378" y="1086" width="164" height="26" rx="6"/>
+<text class="t-label" x="460" y="1103">sql / ambos</text>
+
+<rect class="badge-y" x="918" y="1084" width="164" height="28" rx="6"/>
+<text class="t-label" x="1000" y="1103" font-size="17px">geral</text>
+
+<rect class="badge-y" x="1458" y="1086" width="164" height="26" rx="6"/>
+<text class="t-label" x="1540" y="1103">docs / ambos</text>
+
+<!-- ─── COLUNA SQL (x=10, w=900, center=460) ─── -->
+<rect class="card-purple" x="10" y="1124" width="900" height="205" rx="14"/>
+<text class="t-head-p" x="460" y="1152">Agente SQL  —  Grok (xAI)</text>
+<text class="t-sub-p"  x="460" y="1174">ReAct: Thought → Action → Observation → Final Answer</text>
+<text class="t-sub-p"  x="460" y="1193">Ferramentas: Dremio (vendas · delivery · pgto · estornos · metas · cortesias)</text>
+<text class="t-sub-p"  x="460" y="1211">MySQL (compras)  ·  gerar_grafico  ·  exportar_excel  (fast-path cache)</text>
+<text class="t-sub-p"  x="460" y="1230">Vendas por vertical → casa a casa + total  ·  vs meta somente se pedido</text>
+<text class="t-sub-p"  x="460" y="1248">Histórico: últimas 30 mensagens por sessão (Redis)  ·  prompt cache ativo</text>
+<text class="t-sub-p"  x="460" y="1268" fill="#FACC15" font-size="13px">ambos: executa em paralelo com RAG (ThreadPoolExecutor)</text>
+
+<!-- ─── COLUNA LLM (x=920, w=160, center=1000) ─── -->
+<rect class="card" x="920" y="1124" width="160" height="160" rx="12"/>
+<text class="t-head" x="1000" y="1148">LLM Direto</text>
+<text class="t-sub"  x="1000" y="1168">Gemini 2.0 Flash</text>
+<text class="t-sub"  x="1000" y="1186">(Google)</text>
+<text class="t-sub"  x="1000" y="1206">general_prompt</text>
+<text class="t-sub"  x="1000" y="1224">sem ferramentas</text>
+<text class="t-sub"  x="1000" y="1244" fill="#FACC15">thinking msg</text>
+
+<!-- ─── COLUNA RAG (x=1090, w=900, center=1540) ─── -->
+<rect class="card-purple" x="1090" y="1124" width="900" height="180" rx="14"/>
+<text class="t-head-p" x="1540" y="1156">Agente RAG  —  Grok (xAI)</text>
+<text class="t-sub-p"  x="1540" y="1180">ReAct: Thought → Action → Observation → Final Answer</text>
+<text class="t-sub-p"  x="1540" y="1200">Ferramenta: consultar_documentos (Chroma)</text>
+<text class="t-sub-p"  x="1540" y="1220">Prompt: responder somente com trechos dos documentos</text>
+<text class="t-sub-p"  x="1540" y="1240">Busca semântica  ·  k=5 chunks  ·  vectorstore persistente</text>
+<text class="t-sub-p"  x="1540" y="1260" fill="#FACC15" font-size="13px">/reindexar: reload dinâmico sem restart do servidor</text>
+
+<!-- setas agents → tools -->
+<line class="arr" x1="460"  y1="1329" x2="460"  y2="1338"/>
+<line class="arr" x1="1540" y1="1304" x2="1540" y2="1338"/>
+<!-- LLM direto vai direto para pos-proc -->
+<path class="arr-d" d="M1000,1284 Q1000,1440 1000,1704" fill="none"/>
+
+<!-- ════════════════════════════════════════════════════
+     SEÇÃO 7 — TOOLS
+     ════════════════════════════════════════════════════ -->
+
+<!-- ─── 6 SQL Tools (x=12, w=148 each, gap=4) ─── -->
+<!-- 6×148+5×4=908, start x=12, centers: 86·238·390·542·694·846 -->
+
+<!-- ─── SQL Tools box (x=10, w=900, center=460) ─── -->
+<rect class="card-tool" x="10" y="1342" width="900" height="160" rx="12"/>
+<text class="t-tool" x="460" y="1368" style="font-size: 15px">Seleciona e executa a ferramenta adequada</text>
+<line x1="20" y1="1378" x2="900" y2="1378" stroke="#00CC6A" stroke-width="1" opacity="0.4"/>
+<line x1="460" y1="1378" x2="460" y2="1492" stroke="#00CC6A" stroke-width="0.5" opacity="0.3"/>
+<!-- coluna 1 (center=235) -->
+<text class="t-tool-s" x="235" y="1404" style="font-size: 15px">consultar_transacoes</text>
+<text class="t-tool-s" x="235" y="1426" style="font-size: 15px">consultar_delivery</text>
+<text class="t-tool-s" x="235" y="1448" style="font-size: 15px">consultar_formas_pagamento</text>
+<text class="t-tool-s" x="235" y="1470" style="font-size: 15px">consultar_estornos</text>
+<!-- coluna 2 (center=685) -->
+<text class="t-tool-s" x="685" y="1404" style="font-size: 15px">consultar_metas</text>
+<text class="t-tool-s" x="685" y="1426" style="font-size: 15px">consultar_compras</text>
+<text class="t-tool-s" x="685" y="1448" style="font-size: 15px">gerar_grafico</text>
+<text class="t-tool-s" x="685" y="1470" style="font-size: 15px">exportar_excel</text>
+
+<!-- ─── RAG Tool box (x=1090, w=900, center=1540) ─── -->
+<rect class="card-tool" x="1090" y="1342" width="900" height="160" rx="12"/>
+<text class="t-tool" x="1540" y="1368" style="font-size: 15px">Seleciona e executa a ferramenta adequada</text>
+<line x1="1100" y1="1378" x2="1980" y2="1378" stroke="#00CC6A" stroke-width="1" opacity="0.4"/>
+<text class="t-tool-s" x="1540" y="1450" style="font-size: 17px">consultar_documentos</text>
+
+<!-- setas tools → pos-proc (bottom y=1502) -->
+<path class="arr-d" d="M460,1502  Q460,1600  1000,1704"  fill="none"/>
+<path class="arr-d" d="M1540,1502 Q1540,1610 1000,1704"  fill="none"/>
+
+<!-- ════════════════════════════════════════════════════
+     SEÇÃO 8 — PÓS-PROCESSAMENTO
+     ════════════════════════════════════════════════════ -->
+<rect class="card" x="600" y="1704" width="800" height="100" rx="12"/>
+<text class="t-head" x="1000" y="1732">chains.py  —  Pos-processamento</text>
+<text class="t-sub"  x="1000" y="1756">salva histórico atualizado no Redis (TTL 24 h)</text>
+<text class="t-sub"  x="1000" y="1778">retorna resposta formatada ao caller</text>
+
+<line class="arr-p" x1="1000" y1="1804" x2="1000" y2="1824"/>
+
+<!-- ════════════════════════════════════════════════════
+     SEÇÃO 9 — ENVIO
+     ════════════════════════════════════════════════════ -->
+<rect class="card" x="600" y="1828" width="800" height="150" rx="12"/>
+<text class="t-head" x="1000" y="1856">integrations/evolution_api.py</text>
+<text class="t-sub"  x="1000" y="1878">send_whatsapp_message()   →  POST Evolution API  →  texto</text>
+<text class="t-sub"  x="1000" y="1898">send_whatsapp_image()     →  POST Evolution API  →  imagem (PNG)</text>
+<text class="t-sub"  x="1000" y="1918">send_whatsapp_document()  →  POST Evolution API  →  arquivo (.xlsx)</text>
+<text class="t-sub"  x="1000" y="1938" fill="#FACC15">send_whatsapp_presence()  →  status "digitando..." no chat</text>
+<text class="t-sub"  x="1000" y="1958" fill="#FACC15">send_whatsapp_reaction()  →  reação ⏳ / ✅ na mensagem</text>
+
+<line class="arr" x1="1000" y1="1978" x2="1000" y2="1998"/>
+
+<!-- ════════════════════════════════════════════════════
+     SEÇÃO 10 — USUÁRIO FINAL
+     ════════════════════════════════════════════════════ -->
+<rect class="card" x="600" y="2002" width="800" height="76" rx="12"/>
+<text class="t-head" x="1000" y="2032">Usuario WhatsApp</text>
+<text class="t-sub"  x="1000" y="2054">recebe a resposta no chat</text>
+
+</svg>

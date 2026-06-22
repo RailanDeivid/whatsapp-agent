@@ -1,0 +1,10 @@
+.venv/
+.git/
+.env
+__pycache__/
+*.pyc
+*.pyo
+vectorstore_data/
+*.png
+*.svg
+Links.txt

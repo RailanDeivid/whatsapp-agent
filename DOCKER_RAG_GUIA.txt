@@ -1,0 +1,142 @@
+========================================================
+  GUIA DOCKER — BOT WHATSAPP + RAG
+========================================================
+
+--------------------------------------------------------
+  PRIMEIRA VEZ (subir tudo do zero)
+--------------------------------------------------------
+docker compose up --build -d
+
+  O que faz:
+  - Builda a imagem do bot
+  - Sobe todos os containers (bot, redis, postgres, evolution)
+  - Cria os volumes automaticamente (incluindo vectorstore)
+
+
+--------------------------------------------------------
+  ADICIONOU UM PDF NOVO
+--------------------------------------------------------
+Opcao 1 — Sem reiniciar o bot (recomendado):
+
+1. Coloque o PDF na pasta:  rag_files/
+
+2. Envie o comando no WhatsApp (admin):
+   /reindexar
+
+   O que acontece:
+   - O bot indexa os arquivos novos imediatamente
+   - Os PDFs sao deletados automaticamente apos indexacao
+   - Os vetores sao adicionados ao indice existente em vectorstore/
+   - Proximas consultas ja usam os novos documentos
+
+Opcao 2 — Com restart do bot:
+
+1. Coloque o PDF na pasta:  rag_files/
+
+2. Reinicie apenas o bot:
+   docker compose restart bot
+
+   O que acontece:
+   - Na primeira pergunta sobre documentos, o bot indexa o PDF
+   - O PDF e deletado automaticamente apos ser indexado
+   - Os vetores sao salvos no volume vectorstore (persistem)
+
+Opcao 3 — Via endpoint HTTP (com API key):
+
+   curl -X POST http://localhost:8000/reindexar \
+        -H "x-api-key: SUA_API_KEY"
+
+   Retorna: {"sucesso": true, "mensagem": "2 arquivo(s) indexado(s) com 47 chunks."}
+
+
+--------------------------------------------------------
+  ATUALIZAR O CODIGO (fez alteracao nos arquivos .py)
+--------------------------------------------------------
+docker compose up --build -d bot
+
+  O que faz:
+  - Reconstroi apenas a imagem do bot
+  - Reinicia o container do bot com o novo codigo
+  - Os outros containers (redis, postgres, evolution) continuam rodando
+
+
+--------------------------------------------------------
+  VER LOGS DO BOT (acompanhar indexacao, erros, etc.)
+--------------------------------------------------------
+docker compose logs -f bot
+
+
+--------------------------------------------------------
+  LIMPAR CACHE DE RESPOSTAS (forcas reprocessamento)
+--------------------------------------------------------
+curl -X POST http://localhost:8000/limpar_cache \
+     -H "x-api-key: SUA_API_KEY"
+
+  Retorna: {"chaves_removidas": 42}
+
+  Quando usar:
+  - Depois de corrigir dados no banco e querer respostas atualizadas
+  - Se o bot estiver retornando respostas desatualizadas do cache
+
+
+--------------------------------------------------------
+  ZERAR TODOS OS DOCUMENTOS INDEXADOS (resetar o RAG)
+--------------------------------------------------------
+docker compose down
+docker volume rm whatsapp-agent_vectorstore
+docker compose up -d
+
+  Atencao: substitua "whatsapp-agent" pelo nome da pasta
+  do projeto se for diferente. Para confirmar o nome:
+  docker volume ls
+
+
+--------------------------------------------------------
+  PARAR TUDO
+--------------------------------------------------------
+docker compose down
+
+
+--------------------------------------------------------
+  PARAR TUDO E APAGAR TODOS OS VOLUMES (reset completo)
+--------------------------------------------------------
+docker compose down -v
+
+  Atencao: apaga Redis (historico de conversa),
+  Postgres (Evolution), e vectorstore (RAG).
+  Use so se quiser comecar do zero absoluto.
+
+
+--------------------------------------------------------
+  COMANDOS WHATSAPP (admin)
+--------------------------------------------------------
+
+/reindexar
+  Indexa novos PDFs/TXTs da pasta rag_files sem reiniciar o bot.
+
+/limpar
+  Apaga o historico de conversa do proprio usuario (disponivel a todos).
+
+/ajuda
+  Lista todos os comandos disponiveis.
+
+
+--------------------------------------------------------
+  RESUMO RAPIDO
+--------------------------------------------------------
+
+Situacao                          Comando
+--------------------------------  --------------------------------
+Primeira vez                      docker compose up --build -d
+Adicionou PDF (sem restart)       /reindexar  (WhatsApp admin)
+Adicionou PDF (com restart)       docker compose restart bot
+Alterou codigo Python             docker compose up --build -d bot
+Ver logs                          docker compose logs -f bot
+Limpar cache de respostas         POST /limpar_cache  (com API key)
+Resetar indice RAG                docker compose down
+                                  docker volume rm whatsapp-agent_vectorstore
+                                  docker compose up -d
+Parar tudo                        docker compose down
+Reset completo (apaga tudo)       docker compose down -v
+
+========================================================
