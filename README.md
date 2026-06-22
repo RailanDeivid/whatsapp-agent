@@ -55,9 +55,6 @@ Assistente inteligente integrado ao WhatsApp com arquitetura **multi-agente**: u
 ### Interação por Áudio
 <img src="image/image-5.png" width="800" alt="Diagrama do fluxo">
 
-## Perguntas sobre Políticas\Regras
-<img src="image/image-8.png" width="800" alt="Diagrama do fluxo">
-
 ---
 
 ## Fluxo Completo — Do WhatsApp à Resposta
@@ -87,7 +84,8 @@ whatsapp-agent/
 │   │   ├── dremio.py               # Conector REST API Dremio → DataFrame
 │   │   └── mysql.py                # Conector MySQL → DataFrame (lazy pool)
 │   ├── tools/
-│   │   ├── dremio_tools.py         # Tools: consultar_transacoes, consultar_delivery, consultar_formas_pagamento, consultar_estornos, consultar_metas
+│   │   ├── dremio_tools.py         # Tools: consultar_transacoes, consultar_delivery, consultar_formas_pagamento, consultar_estornos, consultar_metas, consultar_cortesias
+│   │   ├── resumo_tool.py          # Tool: gerar_resumo — resumo consolidado em paralelo (5 queries simultâneas)
 │   │   ├── mysql_tools.py          # Tool: consultar_compras
 │   │   ├── chart_tool.py           # Tool: gerar_grafico — gráficos PNG via matplotlib/seaborn
 │   │   ├── excel_tool.py           # Tool: exportar_excel — planilha .xlsx via pandas/openpyxl
@@ -128,7 +126,7 @@ Dremio+MySQL Chroma       (paralelo — ThreadPoolExecutor)
 
 | Rota | Quando aciona | Modelo | Ferramentas |
 |---|---|---|---|
-| `sql` | Vendas, faturamento, delivery, formas de pagamento, estornos, metas, compras, ticket médio | Grok 4.1 Fast | `consultar_transacoes`, `consultar_delivery`, `consultar_formas_pagamento`, `consultar_estornos`, `consultar_metas`, `consultar_cortesias` (Dremio) + `consultar_compras` (MySQL) + `gerar_grafico` + `exportar_excel` |
+| `sql` | Vendas, faturamento, delivery, formas de pagamento, estornos, metas, compras, ticket médio | Grok 4.1 Fast | `consultar_transacoes`, `consultar_delivery`, `consultar_formas_pagamento`, `consultar_estornos`, `consultar_metas`, `consultar_cortesias`, `gerar_resumo` (Dremio) + `consultar_compras` (MySQL) + `gerar_grafico` + `exportar_excel` |
 | `docs` | Políticas, organograma, contatos, emails, ramais | Grok 4.1 Fast | `consultar_documentos` (Chroma) |
 | `ambos` | Pergunta envolve dados numéricos E documentos | Grok 4.1 Fast | Agente SQL + Agente RAG **em paralelo** |
 | `geral` | Saudações, agradecimentos, fora do escopo, perguntas conceituais | GPT-4o mini | Nenhuma — LLM direto (sem ReAct) |
@@ -155,8 +153,8 @@ Todos os serviços possuem **health checks**. O `bot` e a `evolution-api` só so
 
 | Banco | Função |
 |---|---|
-| Dremio | Dados de vendas — views `fTransacoes`, `fDelivery`, `fFormasPagamento`, `fEstornos`, `dMetas` |
-| MySQL | Dados de compras — tabela `tabela_compras` |
+| Dremio | Dados de transações — views `fTransacoes`, `fDelivery`, `fFormasPagamento`, `fEstornos`, `fCortesias`, `dMetas` |
+| MySQL | Dados de compras — tabela `tb_compras` |
 
 ---
 
@@ -246,6 +244,8 @@ docker compose down && rm -rf ./vectorstore && docker compose up -d
 | `consultar_formas_pagamento` | SQL | Dremio | Mix de pagamentos, participação por forma (dinheiro, cartão, pix) |
 | `consultar_estornos` | SQL | Dremio | Estornos, cancelamentos, devoluções |
 | `consultar_metas` | SQL | Dremio | Metas, orçamento, vendas vs meta, fluxo vs meta |
+| `consultar_cortesias` | SQL | Dremio | Itens de cortesia, motivos, totais por unidade |
+| `gerar_resumo` | SQL | Dremio | Resumo consolidado (5 queries em paralelo) — ativado por "resumo", "visão geral" ou "panorama" |
 | `consultar_compras` | SQL | MySQL | Pedidos de compra, fornecedores, notas fiscais |
 | `exportar_excel` | SQL | Dremio/MySQL | Quando o usuário pede os dados em `.xlsx` |
 | `gerar_grafico` | SQL | Dremio/MySQL | Quando o usuário pede visualização gráfica |
